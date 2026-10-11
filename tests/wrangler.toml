@@ -1,0 +1,14 @@
+name = "tv-next-integration-test"
+main = "../worker/src/index.ts"
+compatibility_date = "2025-09-01"
+
+[vars]
+FRONTEND_URL = "http://localhost:4173/"
+VAPID_PUBLIC_KEY = "test-only-public-key"
+ADMIN_TOKEN = "test-only-admin-token-not-for-production"
+JOB_TOKEN = "test-only-job-token-not-for-production"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tv-next-test"
+database_id = "00000000-0000-0000-0000-000000000000"

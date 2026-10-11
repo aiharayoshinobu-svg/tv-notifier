@@ -1,0 +1,13 @@
+name = "tv-next-kanagawa"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[vars]
+FRONTEND_URL = "https://aiharayoshinobu-svg.github.io/tv-notifier/"
+VAPID_PUBLIC_KEY = "REPLACE_WITH_YOUR_PUBLIC_VAPID_KEY"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tv-next"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
