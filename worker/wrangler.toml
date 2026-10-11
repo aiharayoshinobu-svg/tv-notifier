@@ -5,9 +5,9 @@ workers_dev = true
 
 [vars]
 FRONTEND_URL = "https://aiharayoshinobu-svg.github.io/tv-notifier/"
-VAPID_PUBLIC_KEY = "REPLACE_WITH_YOUR_PUBLIC_VAPID_KEY"
+VAPID_PUBLIC_KEY = "BFb_wsy5JiITZOt_25SUiLB7H5RYqdE1GgnlkKAAB0bwU8y99903bOz6R7ptEZjcNjc0Wjj-rojUcRFeiN7yERM"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "tv-next"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "4d5032d6-5df3-472c-b49a-3bec511f7bc0"
