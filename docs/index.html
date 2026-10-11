@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#153c38">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="好きなテレビ番組の、次の放送を見逃さない。神奈川・地上波・BS・BSプレミアム4K対応の個人用PWA。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https: http://localhost:* http://127.0.0.1:*; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'">
+  <title>テレビのつづき</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="テレビのつづき ホーム"><span class="brand-icon" aria-hidden="true">▣</span><span>テレビのつづき<small>TV NEXT / MY WATCHLIST</small></span></a>
+    <span class="region">神奈川</span>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">次の楽しみを、手のひらに。</div>
+      <h1>好きな番組の、<br>つづきを待とう。</h1>
+      <p>次回の放送情報が見つかったら、お知らせ。<br>ホーム画面から使える、あなただけの番組リスト。</p>
+      <div class="hero-bottom"><span class="pill">地上波 / BS / BSプレミアム4K</span><span id="connection-status" class="connection">未接続</span></div>
+      <div class="tv-art" aria-hidden="true"><div class="antenna"></div><div class="tv-body"><div class="screen"><span>つづく</span><small>NEXT ON AIR</small></div><div class="tv-controls"><i></i><i></i><b>|||</b></div></div><div class="tv-feet"></div></div>
+    </section>
+    <nav class="tabs" aria-label="メインメニュー">
+      <button data-tab="next" class="active" aria-current="page">次回の放送 <span id="episode-count">0</span></button>
+      <button data-tab="shows">登録番組 <span id="show-count">6</span></button>
+      <button data-tab="settings">設定</button>
+    </nav>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    <section id="tab-next" class="panel">
+      <div class="section-heading"><div><div class="eyebrow">UPCOMING</div><h2>次回の放送</h2></div><button id="refresh" class="secondary">一覧を更新</button></div>
+      <p id="updated" class="muted">接続すると、取得した放送情報がここに並びます。</p>
+      <div id="episodes"></div>
+      <aside class="note">放送局の公式情報を定期チェックします。掲載前の情報は取得できません。緊急ニュースなどで予定が変わることがあります。</aside>
+    </section>
+    <section id="tab-shows" class="panel" hidden>
+      <div class="section-heading"><div><div class="eyebrow">WATCHLIST</div><h2>登録番組</h2></div><button id="restore" class="secondary">6番組を戻す</button></div>
+      <p class="muted">通知対象を番組ごとに設定できます。変更はすべての登録端末で共通です。</p>
+      <div id="shows"></div>
+      <form id="add-show" class="card add-card">
+        <h3>NHKの番組を追加</h3>
+        <label for="show-title">番組名（番組表の表記に合わせて入力）</label>
+        <div class="input-row"><input id="show-title" required maxlength="80" placeholder="例：ドキュメント72時間"><button class="primary" type="submit">追加する</button></div>
+        <p class="muted">番組名の部分一致で検索します。民放の追加は、新しい取得処理の実装が必要です。最大20番組。</p>
+      </form>
+    </section>
+    <section id="tab-settings" class="panel" hidden>
+      <div class="section-heading"><div><div class="eyebrow">SETTINGS</div><h2>接続と通知</h2></div></div>
+      <form id="connect" class="card">
+        <div class="step-label">01 / サーバー接続</div>
+        <h3>あなたのWorkerにつなぐ</h3>
+        <p class="muted">公開設定は付属のセットアップ手順をご覧ください。接続キーを公開ページのソースに書く必要はありません。</p>
+        <label for="worker-url">Cloudflare Worker URL</label>
+        <input id="worker-url" type="url" required placeholder="https://tv-next-kanagawa.example.workers.dev" autocomplete="url">
+        <label for="admin-token">接続キー（ADMIN_TOKEN）</label>
+        <input id="admin-token" type="password" required minlength="32" autocomplete="off" placeholder="自分で設定した接続キー">
+        <div class="button-row"><button class="primary" type="submit">接続する</button><button id="disconnect" class="secondary" type="button">この端末の接続を解除</button></div>
+        <p class="muted">接続キーはこの端末のブラウザーに保存します。自分専用の端末で利用し、他人には渡さないでください。</p>
+      </form>
+      <div class="card">
+        <div class="step-label">02 / iPhoneの通知</div>
+        <h3>次回情報を受け取る</h3>
+        <ol class="instructions"><li>iOS 16.4以降のSafariでこのページを開く</li><li>共有メニューから「ホーム画面に追加」</li><li>ホーム画面のアイコンから開き、接続する</li><li>下のボタンを押して、通知を許可する</li></ol>
+        <p id="push-status" class="muted"></p>
+        <div class="button-row"><button id="enable-push" class="primary">この端末で通知を受け取る</button><button id="test-push" class="secondary">テスト通知を予約</button><button id="disable-push" class="text-button">この端末の通知を停止</button></div>
+        <p class="muted">テスト通知も次回の定期実行時に送信します。すぐ確認する場合はGitHub Actionsを手動実行してください。</p>
+        <div id="devices"></div>
+      </div>
+      <div class="card"><div class="step-label">03 / 情報取得の状態</div><h3>取得元のチェック</h3><div id="sources"></div><p class="muted">民放の自動取得は初期状態では無効です。利用条件を確認してから有効にしてください。</p></div>
+    </section>
+  </main>
+  <footer><strong>テレビのつづき</strong><p>神奈川向け / 8Kは対象外 / 毎時チェック（実行の遅延あり）</p><p>ＮＨＫ番組の情報提供:ＮＨＫ</p><p>各放送局とは無関係の個人用アプリです。放送日時・内容は公式情報をご確認ください。</p></footer>
+</body>
+</html>
